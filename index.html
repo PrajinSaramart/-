@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมผจญภัยในพระอภัยมณี</title>
+    <!-- Google Fonts: Sarabun & Mitr for beautiful Thai typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #ffd700;
+            --secondary: #00f0ff;
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --text-light: #ffffff;
+            --glass-bg: rgba(15, 23, 42, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glow-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-image: url('https://i.postimg.cc/LXZ6K9gL/Chat-GPT-Image-22-m-y-2569-21-10-47.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            color: var(--text-light);
+            padding: 15px;
+            position: relative;
+        }
+
+        /* Ambient Stars Overlay */
+        #stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: floatStar 6s infinite ease-in-out;
+            box-shadow: 0 0 10px #fff, 0 0 20px var(--secondary);
+        }
+
+        @keyframes floatStar {
+            0% {
+                transform: translateY(105vh) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-5vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Sparkle Splash effect */
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            background: radial-gradient(circle, #fff 10%, transparent 60%);
+            border-radius: 50%;
+            z-index: 99;
+            animation: explode 0.6s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(-50%, -50%) scale(0.1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+
+        /* Main Game Wrapper */
+        .game-container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), var(--glow-shadow);
+            z-index: 10;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Screens states */
+        .screen {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Shake animation for incorrect answer */
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        /* Title Typography */
+        h1, h2, h3 {
+            font-family: 'Mitr', sans-serif;
+            text-align: center;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+            line-height: 1.2;
+            letter-spacing: 1px;
+        }
+
+        .sub-title {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            margin-bottom: 25px;
+            font-weight: 400;
+        }
+
+        /* Buttons Styling (Glowing) */
+        .btn {
+            font-family: 'Mitr', sans-serif;
+            background: linear-gradient(135deg, #ffd700, #ff9900);
+            color: #1a0f00;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 153, 0, 0.4), 0 0 0 4px rgba(255, 215, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(255, 153, 0, 0.6), 0 0 15px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(135deg, #ffe135, #ffaa00);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Top Bar Info (Header) */
+        .game-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .score-box, .high-score-box, .q-count-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-box i { color: #f1c40f; }
+        .q-count-box i { color: var(--secondary); }
+
+        /* Progress Bar wrapper */
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--secondary), #00ff88);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px var(--secondary);
+        }
+
+        /* Countdown Timer */
+        .timer-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(231, 76, 60, 0.1);
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .timer-bar-wrapper {
+            flex-grow: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--error);
+            border-radius: 4px;
+            transition: width 1s linear;
+        }
+
+        .timer-text {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #ff7675;
+            min-width: 55px;
+            text-align: right;
+        }
+
+        /* Question Box */
+        .question-box {
+            width: 100%;
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Options Grid (Answers) */
+        .options-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        @media (min-width: 480px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.07);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            padding: 16px 22px;
+            font-size: 1.15rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            outline: none;
+            color: #fff;
+        }
+
+        .option-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--secondary);
+            transform: translateX(4px);
+            box-shadow: 0 5px 15px rgba(0, 240, 255, 0.15);
+        }
+
+        .option-card:active {
+            transform: scale(0.98);
+        }
+
+        .option-prefix {
+            background: rgba(255, 255, 255, 0.15);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-family: 'Mitr', sans-serif;
+            color: var(--primary);
+            flex-shrink: 0;
+            transition: all 0.25s ease;
+        }
+
+        .option-card:hover .option-prefix {
+            background: var(--secondary);
+            color: #000;
+        }
+
+        /* Correct & Incorrect Styles */
+        .option-card.correct {
+            background: rgba(46, 204, 113, 0.25) !important;
+            border-color: var(--success) !important;
+            color: #fff !important;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.4) !important;
+        }
+
+        .option-card.correct .option-prefix {
+            background: var(--success) !important;
+            color: white !important;
+        }
+
+        .option-card.incorrect {
+            background: rgba(231, 76, 96, 0.25) !important;
+            border-color: var(--error) !important;
+            color: #fff !important;
+            box-shadow: 0 0 20px rgba(231, 76, 96, 0.4) !important;
+        }
+
+        .option-card.incorrect .option-prefix {
+            background: var(--error) !important;
+            color: white !important;
+        }
+
+        /* Block interaction after selecting an option */
+        .options-grid.disabled .option-card {
+            pointer-events: none;
+        }
+
+        /* Home Screen Decor */
+        .mascot-container {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+            font-size: 4.5rem;
+            animation: bounce 3s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        /* Results Screen */
+        .results-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary), #00ff88);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 25px rgba(0, 240, 255, 0.4);
+            border: 4px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .score-num {
+            font-family: 'Mitr', sans-serif;
+            font-size: 2.8rem;
+            color: #0d1b2a;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .score-total {
+            font-size: 0.9rem;
+            color: #1b4965;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-val {
+            font-size: 1.4rem;
+            font-weight: bold;
+            font-family: 'Mitr', sans-serif;
+        }
+
+        .stat-val.correct-val { color: var(--success); }
+        .stat-val.wrong-val { color: var(--error); }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #b0b8c3;
+            margin-top: 4px;
+        }
+
+        .badge-text {
+            font-size: 1.25rem;
+            color: var(--primary);
+            font-weight: bold;
+            margin-top: 15px;
+            font-family: 'Mitr', sans-serif;
+        }
+
+        /* Sound Control button top right corner */
+        .sound-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.25s ease;
+            z-index: 20;
+        }
+
+        .sound-toggle:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.08);
+        }
+
+        /* Footer Info */
+        .credits {
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 5px;
+        }
+
+        /* Adaptive Mobile Sizes */
+        @media (max-width: 500px) {
+            .game-container {
+                padding: 20px 15px;
+                border-radius: 20px;
+            }
+            .main-title {
+                font-size: 1.9rem;
+            }
+            .sub-title {
+                font-size: 1rem;
+                margin-bottom: 15px;
+            }
+            .question-text {
+                font-size: 1.25rem;
+            }
+            .option-card {
+                padding: 12px 16px;
+                font-size: 1.05rem;
+            }
+            .btn {
+                padding: 12px 30px;
+                font-size: 1.25rem;
+            }
+            .mascot-container {
+                width: 100px;
+                height: 100px;
+                font-size: 3.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Stars Floating Layer -->
+    <div id="stars-container"></div>
+
+    <!-- Sound Controller Button -->
+    <button class="sound-toggle" id="soundToggle" onclick="toggleMute()" title="เปิด/ปิดเสียง">
+        <i class="fas fa-volume-up"></i>
+    </button>
+
+    <!-- Main App Container -->
+    <div class="game-container" id="gameWindow">
+        
+        <!-- Screen 1: Home / Start Screen -->
+        <div id="startScreen" class="screen active">
+            <div class="mascot-container">
+                🧜‍♀️
+            </div>
+            <h1 class="main-title">ผจญภัยในพระอภัยมณี</h1>
+            <p class="sub-title">สุดยอดเกมตอบคำถามผจญภัยแฟนตาซี</p>
+            
+            <button class="btn" onclick="startGame()">
+                เริ่มเกม <i class="fas fa-play"></i>
+            </button>
+            <p class="credits" style="margin-top: 25px;"><i class="fa-solid fa-gamepad"></i> รองรับการสัมผัสเต็มพิกัดบนทุกอุปกรณ์</p>
+        </div>
+
+        <!-- Screen 2: Game Playing Screen -->
+        <div id="quizScreen" class="screen">
+            <!-- Header status bar -->
+            <div class="game-header">
+                <div class="q-count-box">
+                    <i class="fa-solid fa-compass"></i>
+                    <span id="questionCounter">ข้อ 1/15</span>
+                </div>
+                <div class="score-box">
+                    <i class="fa-solid fa-crown"></i>
+                    <span>คะแนน: <span id="currentScore">0</span></span>
+                </div>
+            </div>
+
+            <!-- Global Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <!-- Countdown Timer Row -->
+            <div class="timer-container">
+                <i class="fa-solid fa-hourglass-half" style="color: #ff7675;"></i>
+                <div class="timer-bar-wrapper">
+                    <div class="timer-bar" id="timerBar"></div>
+                </div>
+                <div class="timer-text" id="timerText">20 วิ</div>
+            </div>
+
+            <!-- Question container -->
+            <div class="question-box">
+                <p class="question-text" id="questionText">กำลังโหลดคำถาม...</p>
+            </div>
+
+            <!-- 4 Options grids -->
+            <div class="options-grid" id="optionsGrid">
+                <!-- Dynamic injected buttons here -->
+            </div>
+        </div>
+
+        <!-- Screen 3: Results Summary -->
+        <div id="resultScreen" class="screen">
+            <h2 class="main-title" style="font-size: 2rem;">สิ้นสุดการผจญภัย!</h2>
+            <p class="sub-title" id="performanceGreeting">ทำได้ยอดเยี่ยมมากนักผจญภัย</p>
+
+            <div class="results-box">
+                <!-- Circle Score Display -->
+                <div class="score-circle">
+                    <span class="score-num" id="finalScoreText">0</span>
+                    <span class="score-total">จาก 15 คะแนน</span>
+                </div>
+
+                <div class="badge-text" id="badgeText">
+                    <i class="fas fa-award"></i> ผู้รอบรู้ระดับนักปราชญ์
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-val correct-val" id="correctCountText">0</div>
+                        <div class="stat-label">ตอบถูก (ข้อ)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-val wrong-val" id="wrongCountText">0</div>
+                        <div class="stat-label">ตอบผิด (ข้อ)</div>
+                    </div>
+                    <div class="stat-item" style="grid-column: span 2;">
+                        <div class="stat-val" style="color: var(--secondary);" id="percentText">0%</div>
+                        <div class="stat-label">คิดเป็นร้อยละ</div>
+                    </div>
+                </div>
+
+                <!-- High Score tracker -->
+                <div style="margin-top: 15px; font-size: 0.95rem; color: #ffd700;" id="highScoreText">
+                    <i class="fas fa-trophy"></i> คะแนนสูงสุดเดิม: 0
+                </div>
+            </div>
+
+            <button class="btn" onclick="restartGame()">
+                เล่นอีกครั้ง <i class="fas fa-redo"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Scripts and Logic -->
+    <script>
+        // Quiz Questions Data Array (15 Questions)
+        const quizQuestions = [
+            {
+                id: 1,
+                question: "ผู้แต่งเรื่องพระอภัยมณีคือใคร",
+                options: ["ก. รัชกาลที่ 2", "ข. สุนทรภู่", "ค. รัชกาลที่ 6", "ง. พระยาศรีสุนทรโวหาร"],
+                answerIndex: 1 // ข. สุนทรภู่
+            },
+            {
+                id: 2,
+                question: "พระอภัยมณีมีความสามารถพิเศษด้านใด",
+                options: ["ก. ยิงธนู", "ข. ขี่ม้า", "ค. เป่าปี่", "ง. ฟันดาบ"],
+                answerIndex: 2 // ค. เป่าปี่
+            },
+            {
+                id: 3,
+                question: "ปี่ของพระอภัยมณีมีอานุภาพอย่างไร",
+                options: ["ก. เรียกฝนได้", "ข. ทำให้ผู้ฟังหลับหรือตายได้", "ค. ทำให้หายป่วย", "ง. ทำให้บินได้"],
+                answerIndex: 1 // ข. ทำให้ผู้ฟังหลับหรือตายได้
+            },
+            {
+                id: 4,
+                question: "นางผีเสื้อสมุทรอาศัยอยู่ที่ใด",
+                options: ["ก. ป่าใหญ่", "ข. ถ้ำกลางทะเล", "ค. วังใต้ดิน", "ง. ยอดเขา"],
+                answerIndex: 1 // ข. ถ้ำกลางทะเล
+            },
+            {
+                id: 5,
+                question: "ใครเป็นบุตรของพระอภัยมณีกับนางผีเสื้อสมุทร",
+                options: ["ก. สุดสาคร", "ข. สินสมุทร", "ค. อภัยนุราช", "ง. ศรีสุวรรณ"],
+                answerIndex: 1 // ข. สินสมุทร
+            },
+            {
+                id: 6,
+                question: "ผู้ที่ช่วยพระอภัยมณีหนีจากนางผีเสื้อสมุทรคือใคร",
+                options: ["ก. นางละเวง", "ข. นางสุวรรณมาลี", "ค. นางเงือก", "ง. พระฤาษี"],
+                answerIndex: 2 // ค. นางเงือก
+            },
+            {
+                id: 7,
+                question: "สุดสาครเป็นบุตรของใคร",
+                options: ["ก. พระอภัยมณีกับนางสุวรรณมาลี", "ข. พระอภัยมณีกับนางเงือก", "ค. สินสมุทรกับนางเงือก", "ง. ศรีสุวรรณกับนางละเวง"],
+                answerIndex: 1 // ข. พระอภัยมณีกับนางเงือก
+            },
+            {
+                id: 8,
+                question: "พาหนะคู่ใจของสุดสาครคืออะไร",
+                options: ["ก. ม้าสีหมอก", "ข. ม้านิลมังกร", "ค. ม้าบิน", "ง. ม้าทองคำ"],
+                answerIndex: 1 // ข. ม้านิลมังกร
+            },
+            {
+                id: 9,
+                question: "ใครเป็นผู้เลี้ยงดูสุดสาครในวัยเด็ก",
+                options: ["ก. นางเงือก", "ข. พระอภัยมณี", "ค. พระฤาษี", "ง. นางละเวง"],
+                answerIndex: 2 // ค. พระฤาษี
+            },
+            {
+                id: 10,
+                question: "พระอภัยมณีมีพี่ชายชื่อว่าอะไร",
+                options: ["ก. ศรีสุวรรณ", "ข. สินสมุทร", "ค. สุดสาคร", "ง. อุศเรน"],
+                answerIndex: 0 // ก. ศรีสุวรรณ
+            },
+            {
+                id: 11,
+                question: "นางละเวงเป็นกษัตริย์แห่งเมืองใด",
+                options: ["ก. เมืองผลึก", "ข. เมืองรมจักร", "ค. เมืองลังกา", "ง. เมืองการะเวก"],
+                answerIndex: 2 // ค. เมืองลังกา
+            },
+            {
+                id: 12,
+                question: "เหตุใดพระอภัยมณีจึงถูกพระราชบิดาขับออกจากเมือง",
+                options: ["ก. ไม่ยอมแต่งงาน", "ข. เรียนวิชาที่ไม่เป็นประโยชน์ต่อการปกครอง", "ค. ทำสงครามแพ้", "ง. หนีออกจากวัง"],
+                answerIndex: 1 // ข. เรียนวิชาที่ไม่เป็นประโยชน์ต่อการปกครอง
+            },
+            {
+                id: 13,
+                question: "สินสมุทรมีลักษณะเด่นอย่างไร",
+                options: ["ก. ฉลาดเฉลียว", "ข. มีพละกำลังมาก", "ค. พูดเก่ง", "ง. ว่ายน้ำไม่ได้"],
+                answerIndex: 1 // ข. มีพละกำลังมาก
+            },
+            {
+                id: 14,
+                question: "พระอภัยมณีเป็นวรรณคดีประเภทใด",
+                options: ["ก. นิทานคำกลอน", "ข. บทละคร", "ค. โคลงสี่สุภาพ", "ง. ลิลิต"],
+                answerIndex: 0 // ก. นิทานคำกลอน
+            },
+            {
+                id: 15,
+                question: "ข้อใดเป็นข้อคิดสำคัญจากเรื่องพระอภัยมณี",
+                options: ["ก. ความซื่อสัตย์และการใช้สติปัญญา", "ข. การสะสมทรัพย์สิน", "ค. การแข่งขันทางการค้า", "ง. การเดินทางท่องเที่ยว"],
+                answerIndex: 0 // ก. ความซื่อสัตย์และการใช้สติปัญญา
+            }
+        ];
+
+        // App Game States
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval = null;
+        let timeLeft = 20;
+        let hasAnswered = false;
+        let isMuted = false;
+
+        // Web Audio Synthesizer Engine (synthesizing sound effects without needing external resources)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (isMuted) return;
+            try {
+                // Ensure audio context is active
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                switch (type) {
+                    case 'click':
+                        synthesizeClick();
+                        break;
+                    case 'correct':
+                        synthesizeCorrect();
+                        break;
+                    case 'wrong':
+                        synthesizeWrong();
+                        break;
+                    case 'timer-low':
+                        synthesizeTimerLow();
+                        break;
+                    case 'win':
+                        synthesizeWin();
+                        break;
+                }
+            } catch (e) {
+                console.log("Audio play blocked/failed:", e);
+            }
+        }
+
+        // Synthesize Quick button click sound
+        function synthesizeClick() {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        // Synthesize Sparkly Correct Sound (Golden Arpeggio)
+        function synthesizeCorrect() {
+            const now = audioCtx.currentTime;
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, idx) => {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                gain.gain.setValueAtTime(0.15, now + idx * 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.3);
+                osc.start(now + idx * 0.08);
+                osc.stop(now + idx * 0.08 + 0.35);
+            });
+        }
+
+        // Synthesize heavy vibration wrong sound
+        function synthesizeWrong() {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.32);
+        }
+
+        // Synthesize ticking sound for critical timer
+        function synthesizeTimerLow() {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.06);
+        }
+
+        // Synthesize Level Up / Victory Fanfare sound
+        function synthesizeWin() {
+            const now = audioCtx.currentTime;
+            const notes = [523.25, 659.25, 783.99, 987.77, 1046.50]; // C5, E5, G5, B5, C6
+            notes.forEach((freq, idx) => {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+                gain.gain.setValueAtTime(0.15, now + idx * 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.02, now + idx * 0.12 + 0.4);
+                osc.start(now + idx * 0.12);
+                osc.stop(now + idx * 0.12 + 0.45);
+            });
+        }
+
+        // Sound Toggle Utility
+        function toggleMute() {
+            isMuted = !isMuted;
+            const btnIcon = document.getElementById('soundToggle').querySelector('i');
+            if (isMuted) {
+                btnIcon.className = 'fas fa-volume-mute';
+                document.getElementById('soundToggle').style.background = 'rgba(231, 76, 60, 0.2)';
+            } else {
+                btnIcon.className = 'fas fa-volume-up';
+                document.getElementById('soundToggle').style.background = 'rgba(255, 255, 255, 0.1)';
+                playSound('click');
+            }
+        }
+
+        // Generate Floating background ambient stars
+        function makeFloatingStars() {
+            const container = document.getElementById('stars-container');
+            const totalStars = 25;
+            for (let i = 0; i < totalStars; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                resetStarStyle(star);
+                // Randomize early positions to avoid starting all at bottom
+                star.style.bottom = Math.random() * 100 + 'vh';
+                container.appendChild(star);
+            }
+        }
+
+        function resetStarStyle(star) {
+            const size = Math.random() * 4 + 2;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            star.style.animationDelay = (Math.random() * 5) + 's';
+        }
+
+        // Burst glitter/stars particles on correct answer
+        function triggerSparkleEffect(x, y) {
+            const starCount = 15;
+            for (let i = 0; i < starCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('sparkle');
+                
+                const size = Math.random() * 12 + 8;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // Color spectrum
+                const colors = ['#ffd700', '#00f0ff', '#ffffff', '#2ecc71', '#fffa65'];
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.boxShadow = `0 0 10px ${particle.style.backgroundColor}`;
+                
+                // Position initial
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                
+                // Angle and distance dispersion
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 110 + 40;
+                const dx = Math.cos(angle) * distance;
+                const dy = Math.sin(angle) * distance;
+                
+                particle.style.transform = 'translate(-50%, -50%)';
+                document.body.appendChild(particle);
+                
+                // Animate physics
+                particle.animate([
+                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+                    { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 400 + 400,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
+                    fill: 'forwards'
+                });
+                
+                // Garbage collect
+                setTimeout(() => {
+                    particle.remove();
+                }, 800);
+            }
+        }
+
+        // Screen switching controller
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Game Initialization
+        function startGame() {
+            playSound('click');
+            currentQuestionIndex = 0;
+            score = 0;
+            hasAnswered = false;
+            document.getElementById('currentScore').innerText = score;
+            
+            showScreen('quizScreen');
+            loadQuestion();
+        }
+
+        // Loader for active Question
+        function loadQuestion() {
+            hasAnswered = false;
+            timeLeft = 20;
+            
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            
+            // Progress indicators
+            document.getElementById('questionCounter').innerText = `ข้อ ${currentQuestion.id}/${quizQuestions.length}`;
+            const progressPercent = ((currentQuestionIndex) / quizQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+
+            // Reset Answer Frame
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.classList.remove('disabled');
+            optionsGrid.innerHTML = '';
+
+            // Set Text
+            document.getElementById('questionText').innerText = currentQuestion.question;
+
+            // Generate answer buttons/cards
+            currentQuestion.options.forEach((optionText, index) => {
+                const card = document.createElement('div');
+                card.classList.add('option-card');
+                card.tabIndex = 0; // Accessibility
+
+                const prefix = String.fromCharCode(65 + index); // A, B, C, D
+                const prefixChar = optionText.trim().substring(0, 2); // Get "ก." , "ข." etc
+                const cleanText = optionText.substring(2).trim();
+
+                card.innerHTML = `
+                    <div class="option-prefix">${prefixChar}</div>
+                    <div class="option-text">${cleanText}</div>
+                `;
+
+                // Handle both Mouse clicks and touch taps
+                card.addEventListener('click', (e) => handleAnswerSelection(index, e));
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        handleAnswerSelection(index, e);
+                    }
+                });
+
+                optionsGrid.appendChild(card);
+            });
+
+            // Start Question Countdown
+            resetAndStartTimer();
+        }
+
+        // Countdown Timer Clock Engine
+        function resetAndStartTimer() {
+            clearInterval(timerInterval);
+            
+            const timerBar = document.getElementById('timerBar');
+            const timerText = document.getElementById('timerText');
+            
+            // Reset visuals
+            timerBar.style.width = '100%';
+            timerBar.style.backgroundColor = 'var(--secondary)';
+            timerText.innerText = `${timeLeft} วิ`;
+
+            timerInterval = setInterval(() => {
+                if (hasAnswered) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                
+                timeLeft--;
+                timerText.innerText = `${timeLeft} วิ`;
+                
+                // Shrink percentage
+                const barPercentage = (timeLeft / 20) * 100;
+                timerBar.style.width = `${barPercentage}%`;
+
+                // Warning alerts when under 5s
+                if (timeLeft <= 5) {
+                    timerBar.style.backgroundColor = 'var(--error)';
+                    playSound('timer-low');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        // Auto Wrong trigger when countdown hits zero
+        function handleTimeout() {
+            hasAnswered = true;
+            playSound('wrong');
+
+            // Apply shake to window
+            const gameWin = document.getElementById('gameWindow');
+            gameWin.classList.add('shake');
+            setTimeout(() => gameWin.classList.remove('shake'), 450);
+
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.classList.add('disabled');
+
+            // Highlight the correct answer
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            const optionCards = optionsGrid.children;
+            
+            optionCards[currentQuestion.answerIndex].classList.add('correct');
+
+            // Brief wait then proceed
+            setTimeout(() => {
+                nextQuestion();
+            }, 2500);
+        }
+
+        // Answer verification logic
+        function handleAnswerSelection(selectedIdx, event) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+            clearInterval(timerInterval);
+
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.classList.add('disabled');
+
+            const optionCards = optionsGrid.children;
+            const isCorrect = (selectedIdx === currentQuestion.answerIndex);
+
+            if (isCorrect) {
+                // Correct Answer setup
+                score++;
+                document.getElementById('currentScore').innerText = score;
+                optionCards[selectedIdx].classList.add('correct');
+                playSound('correct');
+
+                // Compute sparkle launch location
+                let x = window.innerWidth / 2;
+                let y = window.innerHeight / 2;
+                if (event && event.clientX) {
+                    x = event.clientX;
+                    y = event.clientY;
+                }
+                triggerSparkleEffect(x, y);
+
+            } else {
+                // Incorrect Answer setup
+                optionCards[selectedIdx].classList.add('incorrect');
+                // Highlight correct one so user learns
+                optionCards[currentQuestion.answerIndex].classList.add('correct');
+                playSound('wrong');
+
+                // Apply shake to window
+                const gameWin = document.getElementById('gameWindow');
+                gameWin.classList.add('shake');
+                setTimeout(() => gameWin.classList.remove('shake'), 450);
+            }
+
+            // Transit to next question
+            setTimeout(() => {
+                nextQuestion();
+            }, 2200);
+        }
+
+        // Transition loop
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        // Results calculation page
+        function endGame() {
+            clearInterval(timerInterval);
+            playSound('win');
+
+            // Set Progress Bar to 100% full
+            document.getElementById('progressBar').style.width = '100%';
+
+            // Calculations
+            const wrongAnswers = quizQuestions.length - score;
+            const scorePercentage = Math.round((score / quizQuestions.length) * 100);
+
+            // Populate Text
+            document.getElementById('finalScoreText').innerText = score;
+            document.getElementById('correctCountText').innerText = score;
+            document.getElementById('wrongCountText').innerText = wrongAnswers;
+            document.getElementById('percentText').innerText = `${scorePercentage}%`;
+
+            // Score-based Title Badges
+            let greeting = "ยอดเยี่ยมมากนักผจญภัย!";
+            let badgeName = "🏆 ยอดนักปราชญ์แห่งเมืองลังกา";
+            
+            if (scorePercentage === 100) {
+                greeting = "สมบูรณ์แบบไร้ที่ติ!";
+                badgeName = "👑 เทพแห่งวรรณคดีสุนทรภู่";
+            } else if (scorePercentage >= 80) {
+                greeting = "รอบรู้มากๆ เลย!";
+                badgeName = "🎓 ผู้รอบรู้ศิษย์พระฤาษี";
+            } else if (scorePercentage >= 50) {
+                greeting = "ผ่านเกณฑ์ครึ่งทางพอดี!";
+                badgeName = "🛡️ นักเดินทางสำรวจเกาะแก้วพิสดาร";
+            } else {
+                greeting = "ลองฝึกฝนบ่อยๆ นะ!";
+                badgeName = "⛵ ลูกเรือผู้เริ่มต้นผจญภัย";
+            }
+
+            document.getElementById('performanceGreeting').innerText = greeting;
+            document.getElementById('badgeText').innerHTML = `<i class="fas fa-award"></i> ${badgeName}`;
+
+            // Save and Retrieve Local Highscore
+            const savedHighScore = localStorage.getItem('abhiph_quiz_highscore') || 0;
+            if (score > savedHighScore) {
+                localStorage.setItem('abhiph_quiz_highscore', score);
+                document.getElementById('highScoreText').innerHTML = `<i class="fas fa-trophy"></i> ขอแสดงความยินดี! คุณทำสถิติคะแนนสูงสุดใหม่: ${score}`;
+            } else {
+                document.getElementById('highScoreText').innerHTML = `<i class="fas fa-trophy"></i> คะแนนสูงสุดตลอดกาล: ${savedHighScore}`;
+            }
+
+            showScreen('resultScreen');
+        }
+
+        // Restart loop
+        function restartGame() {
+            playSound('click');
+            startGame();
+        }
+
+        // Window onload
+        window.onload = function() {
+            makeFloatingStars();
+        }
+    </script>
+</body>
+</html>
